@@ -107,7 +107,7 @@ object Movie extends App {
     //Hint: Think of the return type of method. Also, you need the apply method which is similar as a construction method in java.
     //The source file is a csv file which is separated by ","
     // 11 points
-    def fromString(w: String): Try[Movie] = ??? // TO BE IMPLEMENTED
+    def fromString(w: String): Try[Movie] = Try(Movie.apply(w.split(",").toSeq)) // TO BE IMPLEMENTED
   }
 
   implicit object IngestibleMovie extends IngestibleMovie
@@ -134,7 +134,9 @@ object Movie extends App {
     // Hint: form a new list which is consisted by the elements in list in position indices. Int* means array of Int.
     // 6 points
     // TO BE IMPLEMENTED
-    ???
+    for (index <- indices){
+      x += list.apply(index);
+    }
     x.toList
   }
 
@@ -216,6 +218,9 @@ object Rating {
     */
   // Hint: This should similar to apply method in Object Name. The parameter of apply in case match should be same as case class Rating
   // 13 points
-  def apply(s: String): Rating = ??? // TO BE IMPLEMENTED
-
+  def apply(s: String): Rating = s match {
+    case rRating(code, _, null) => apply(code, None)
+    case rRating(code, _, age) => apply(code, Some(age.toInt))
+    case _ => throw new Exception(s"parse error in Rating: $s")
+  }// TO BE IMPLEMENTED
 }
