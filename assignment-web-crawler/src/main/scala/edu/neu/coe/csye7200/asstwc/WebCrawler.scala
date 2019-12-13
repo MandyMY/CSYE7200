@@ -24,14 +24,14 @@ object WebCrawler extends App {
   def wget(u: URL): Future[Seq[URL]] = {
     // Hint: write as a for-comprehension, using the constructor new URL(URL,String) to get the appropriate URL for relative links
     // 16 points.
-    def getURLs(ns: Node): Seq[URL] = ??? // TO BE IMPLEMENTED
+    def getURLs(ns: Node): Seq[URL] = for (n <- ns \\ "a"; st = n \@ "href") yield new URL(u, st)// TO BE IMPLEMENTED
 
     def getLinks(g: String): Try[Seq[URL]] =
       for (n <- HTMLParser.parse(g) recoverWith { case f => Failure(new RuntimeException(s"parse problem with URL $u: $f")) })
         yield getURLs(n)
     // Hint: write as a for-comprehension, using getURLContent (above) and getLinks above. You might also need MonadOps.asFuture
     // 9 points.
-    ??? // TO BE IMPLEMENTED
+    for (l<-getURLContent(u); s<-MonadOps.asFuture(getLinks(l)))yield s // TO BE IMPLEMENTED
   }
 
   def wget(us: Seq[URL]): Future[Seq[Either[Throwable, Seq[URL]]]] = {
@@ -39,7 +39,9 @@ object WebCrawler extends App {
     // Hint: Use wget(URL) (above). MonadOps.sequence and Future.sequence are also available to you to use.
     // 15 points. Implement the rest of this, based on us2 instead of us.
     // TO BE IMPLEMENTED
-    ???
+    val us3 = for (l <- us2) yield wget(l)
+    val us4 = MonadOps.sequence(us3)
+    Future.sequence(us4)
   }
 
   def crawler(depth: Int, args: Seq[URL]): Future[Seq[URL]] = {
